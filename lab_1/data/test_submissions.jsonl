@@ -1,0 +1,10 @@
+{"student_id": "s101", "submission_id": "sub-valid-1", "timestamp": "2026-10-13T10:00:00+03:00", "code": "print('Hello World')", "text": "", "ai_declaration": false}
+{"student_id": "s102", "submission_id": "sub-valid-2", "timestamp": "2026-10-13T11:30:00+03:00", "code": "x = 1\ny = 2", "text": "Решение задачи 1", "ai_declaration": true}
+{"student_id": "s101", "submission_id": "sub-valid-1", "timestamp": "2026-10-13T10:00:00+03:00", "code": "print('Hello World')", "text": "", "ai_declaration": false}
+{"student_id": "s103", "submission_id": "sub-conflict-1", "timestamp": "2026-10-13T12:00:00+03:00", "code": "original code", "text": "", "ai_declaration": null}
+{"student_id": "s103", "submission_id": "sub-conflict-1", "timestamp": "2026-10-13T12:05:00+03:00", "code": "modified code", "text": "", "ai_declaration": null}
+{"student_id": "", "submission_id": "sub-empty-id", "timestamp": "2026-10-13T13:00:00+03:00", "code": "test"}
+{"student_id": "s104", "submission_id": "sub-bad-time", "timestamp": "not-a-timestamp", "code": "test"}
+{"student_id": "s105", "submission_id": "sub-missing-fields"}
+this is not a valid json line at all
+{"student_id": "s106", "submission_id": "sub-valid-3", "timestamp": "2026-10-13T14:00:00Z", "code": "import math", "text": "", "ai_declaration": false}
