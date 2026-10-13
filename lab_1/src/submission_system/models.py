@@ -40,3 +40,24 @@ class AnalysisReport:
     score: Optional[float] = None
     rubric_feedback: str = ""
     evidence: List[Dict[str, Any]] = field(default_factory=list)
+
+@dataclass
+class Evidence:
+    line_number: int
+    text: str
+    type: str = "match"
+
+@dataclass
+class AnalysisReport:
+    analyzer_id: str
+    analyzer_version: str
+    score: Optional[float] = None
+    rubric_feedback: str = ""
+    similarity: Optional[float] = None
+    evidence: List[Evidence] = field(default_factory=list)
+
+@dataclass
+class Assignment:
+    assignment_id: str
+    allowed_template: str = ""
+    requirements: Dict[str, Any] = field(default_factory=dict)
