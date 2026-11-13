@@ -34,14 +34,6 @@ class ManifestEntry:
     timestamp_processed: str = field(default_factory=lambda: datetime.now().isoformat())
 
 @dataclass
-class AnalysisReport:
-    analyzer_id: str
-    analyzer_version: str
-    score: Optional[float] = None
-    rubric_feedback: str = ""
-    evidence: List[Dict[str, Any]] = field(default_factory=list)
-
-@dataclass
 class Evidence:
     line_number: int
     text: str

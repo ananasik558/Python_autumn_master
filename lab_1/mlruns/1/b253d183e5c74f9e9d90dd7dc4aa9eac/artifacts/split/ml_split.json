@@ -1,0 +1,90 @@
+{
+  "features": [
+    "token_jaccard",
+    "tfidf_cosine",
+    "method_disagreement",
+    "ngram_overlap_fraction_of_min",
+    "token_count_ratio",
+    "char_count_ratio",
+    "template_matched_lines",
+    "missing_score_count"
+  ],
+  "tuning": {
+    "pairs": [
+      "F01-p1",
+      "F01-p2",
+      "F03-p1",
+      "F03-p2",
+      "F05-p1",
+      "F05-p2",
+      "F06-p1",
+      "F06-p2",
+      "F07-p1",
+      "F07-p2",
+      "F11-p1",
+      "F11-p2",
+      "F12-p1",
+      "F12-p2",
+      "F16-p1",
+      "F16-p2",
+      "F17-p1",
+      "F17-p2"
+    ],
+    "families": [
+      "F01",
+      "F03",
+      "F05",
+      "F06",
+      "F07",
+      "F11",
+      "F12",
+      "F16",
+      "F17"
+    ],
+    "positives": 14,
+    "negatives": 4
+  },
+  "evaluation": {
+    "pairs": [
+      "F02-p1",
+      "F02-p2",
+      "F04-p1",
+      "F04-p2",
+      "F08-p1",
+      "F08-p2",
+      "F09-p1",
+      "F09-p2",
+      "F10-p1",
+      "F10-p2",
+      "F13-p1",
+      "F13-p2",
+      "F14-p1",
+      "F14-p2",
+      "F15-p1",
+      "F15-p2",
+      "F18-p1",
+      "F18-p2",
+      "F19-p1",
+      "F19-p2",
+      "F20-p1",
+      "F20-p2"
+    ],
+    "families": [
+      "F02",
+      "F04",
+      "F08",
+      "F09",
+      "F10",
+      "F13",
+      "F14",
+      "F15",
+      "F18",
+      "F19",
+      "F20"
+    ],
+    "positives": 16,
+    "negatives": 6
+  },
+  "split_unit": "family_id",
+  "families_disjoint": true
+}

@@ -1,0 +1,257 @@
+{
+  "report": {
+    "report_version": "2.2.0",
+    "config_hash": "95621d61c2908e61",
+    "corpus_fingerprint": "2c24573c986d0592",
+    "template_fingerprint": "d615f3d4a867013f",
+    "parameters": {
+      "ngram_size": 3,
+      "max_features": 5000,
+      "max_df": 0.9,
+      "fit_split": "tuning"
+    }
+  },
+  "corpus": {
+    "pairs": 40,
+    "submissions": 60,
+    "template_pairs": 10,
+    "families": 20,
+    "tuning_pairs": 18,
+    "evaluation_pairs": 22,
+    "relations": {
+      "exact_copy": 6,
+      "formatting": 7,
+      "renaming": 7,
+      "independent": 10,
+      "template_only": 10
+    }
+  },
+  "tfidf": {
+    "fit_split": "tuning",
+    "fit_documents": 27,
+    "vocabulary_size": 87,
+    "evaluation_submissions_transformed_without_fit": 33,
+    "max_features": 5000,
+    "max_df": 0.9
+  },
+  "baseline": {
+    "ngram_size": 3
+  },
+  "score_by_relation": {
+    "token_3gram_jaccard": {
+      "tuning": {
+        "exact_copy": {
+          "mean_score": 1.0,
+          "count": 4
+        },
+        "formatting": {
+          "mean_score": 0.9473684210526315,
+          "count": 3
+        },
+        "independent": {
+          "mean_score": 0.17655546171171171,
+          "count": 4
+        },
+        "renaming": {
+          "mean_score": 0.11894007828967179,
+          "count": 3
+        },
+        "template_only": {
+          "mean_score": 0.1997539607240746,
+          "count": 4
+        }
+      },
+      "evaluation": {
+        "exact_copy": {
+          "mean_score": 1.0,
+          "count": 2
+        },
+        "formatting": {
+          "mean_score": 0.9299552906110283,
+          "count": 4
+        },
+        "independent": {
+          "mean_score": 0.14510247666870277,
+          "count": 6
+        },
+        "renaming": {
+          "mean_score": 0.19703075291622482,
+          "count": 4
+        },
+        "template_only": {
+          "mean_score": 0.2967418322561354,
+          "count": 6
+        }
+      }
+    },
+    "tfidf_cosine": {
+      "tuning": {
+        "exact_copy": {
+          "mean_score": 1.0,
+          "count": 4
+        },
+        "formatting": {
+          "mean_score": 0.9808584758532733,
+          "count": 3
+        },
+        "independent": {
+          "mean_score": 0.43272236861070845,
+          "count": 4
+        },
+        "renaming": {
+          "mean_score": 0.2588931193065335,
+          "count": 3
+        },
+        "template_only": {
+          "mean_score": 0.5602230909568456,
+          "count": 4
+        }
+      },
+      "evaluation": {
+        "exact_copy": {
+          "mean_score": 1.0,
+          "count": 2
+        },
+        "formatting": {
+          "mean_score": 0.9537873533524474,
+          "count": 4
+        },
+        "independent": {
+          "mean_score": 0.4500805231954192,
+          "count": 6
+        },
+        "renaming": {
+          "mean_score": 0.48231578224420824,
+          "count": 4
+        },
+        "template_only": {
+          "mean_score": 0.6991855731492206,
+          "count": 6
+        }
+      }
+    }
+  },
+  "methods": [
+    {
+      "method_id": "token_3gram_jaccard",
+      "threshold_selected_on_tuning": 0.08630952380952381,
+      "tuning": {
+        "threshold": 0.08630952380952381,
+        "confusion_matrix": {
+          "true_positive": 13,
+          "false_positive": 3,
+          "true_negative": 1,
+          "false_negative": 1
+        },
+        "tp": 13,
+        "fp": 3,
+        "tn": 1,
+        "fn": 1,
+        "precision": 0.8125,
+        "recall": 0.9285714285714286,
+        "f1": 0.8666666666666666,
+        "accuracy": 0.7777777777777778,
+        "support": 18,
+        "review_rate": 0.8888888888888888
+      },
+      "evaluation": {
+        "threshold": 0.08630952380952381,
+        "confusion_matrix": {
+          "true_positive": 16,
+          "false_positive": 5,
+          "true_negative": 1,
+          "false_negative": 0
+        },
+        "tp": 16,
+        "fp": 5,
+        "tn": 1,
+        "fn": 0,
+        "precision": 0.7619047619047619,
+        "recall": 1.0,
+        "f1": 0.8648648648648648,
+        "accuracy": 0.7727272727272727,
+        "support": 22,
+        "review_rate": 0.9545454545454546
+      },
+      "tuning_auc": 0.7142857142857143,
+      "evaluation_auc": 0.9270833333333334,
+      "skipped_tuning": 0,
+      "skipped_evaluation": 0,
+      "tuning_total": 18,
+      "evaluation_total": 22,
+      "tuning_undefined_rate": 0.0,
+      "evaluation_undefined_rate": 0.0
+    },
+    {
+      "method_id": "tfidf_cosine",
+      "threshold_selected_on_tuning": 0.22311627505154585,
+      "tuning": {
+        "threshold": 0.22311627505154585,
+        "confusion_matrix": {
+          "true_positive": 14,
+          "false_positive": 3,
+          "true_negative": 1,
+          "false_negative": 0
+        },
+        "tp": 14,
+        "fp": 3,
+        "tn": 1,
+        "fn": 0,
+        "precision": 0.8235294117647058,
+        "recall": 1.0,
+        "f1": 0.9032258064516129,
+        "accuracy": 0.8333333333333334,
+        "support": 18,
+        "review_rate": 0.9444444444444444
+      },
+      "evaluation": {
+        "threshold": 0.22311627505154585,
+        "confusion_matrix": {
+          "true_positive": 16,
+          "false_positive": 6,
+          "true_negative": 0,
+          "false_negative": 0
+        },
+        "tp": 16,
+        "fp": 6,
+        "tn": 0,
+        "fn": 0,
+        "precision": 0.7272727272727273,
+        "recall": 1.0,
+        "f1": 0.8421052631578948,
+        "accuracy": 0.7272727272727273,
+        "support": 22,
+        "review_rate": 1.0
+      },
+      "tuning_auc": 0.7857142857142857,
+      "evaluation_auc": 0.875,
+      "skipped_tuning": 0,
+      "skipped_evaluation": 0,
+      "tuning_total": 18,
+      "evaluation_total": 22,
+      "tuning_undefined_rate": 0.0,
+      "evaluation_undefined_rate": 0.0
+    }
+  ],
+  "selected_by_tuning": "tfidf_cosine",
+  "selected_evaluation": {
+    "threshold": 0.22311627505154585,
+    "confusion_matrix": {
+      "true_positive": 16,
+      "false_positive": 6,
+      "true_negative": 0,
+      "false_negative": 0
+    },
+    "tp": 16,
+    "fp": 6,
+    "tn": 0,
+    "fn": 0,
+    "precision": 0.7272727272727273,
+    "recall": 1.0,
+    "f1": 0.8421052631578948,
+    "accuracy": 0.7272727272727273,
+    "support": 22,
+    "review_rate": 1.0
+  },
+  "caveat": "derivation_relation — происхождение примера, а не вердикт о плагиате. Корпус учебный; метрики не являются оценкой точности на реальных студентах."
+}

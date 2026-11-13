@@ -1,0 +1,38 @@
+{
+  "source": "data\\corpus\\submissions.jsonl",
+  "measurements": [
+    {
+      "records": 60,
+      "stream_peak_kib": 53.71,
+      "full_load_peak_kib": 108.7,
+      "full_index_peak_kib": 109.8,
+      "streaming_pairs_peak_kib": 75.84,
+      "stream_peak_bytes_per_record": 916.72,
+      "full_index_bytes_per_record": 1873.85,
+      "requested_copies": 1,
+      "written_records": 60
+    },
+    {
+      "records": 300,
+      "stream_peak_kib": 48.35,
+      "full_load_peak_kib": 456.41,
+      "full_index_peak_kib": 460.48,
+      "streaming_pairs_peak_kib": 177.43,
+      "stream_peak_bytes_per_record": 165.03,
+      "full_index_bytes_per_record": 1571.78,
+      "requested_copies": 5,
+      "written_records": 300
+    },
+    {
+      "records": 600,
+      "stream_peak_kib": 49.02,
+      "full_load_peak_kib": 884.03,
+      "full_index_peak_kib": 891.58,
+      "streaming_pairs_peak_kib": 322.85,
+      "stream_peak_bytes_per_record": 83.67,
+      "full_index_bytes_per_record": 1521.63,
+      "requested_copies": 10,
+      "written_records": 600
+    }
+  ]
+}

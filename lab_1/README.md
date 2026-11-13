@@ -1,6 +1,6 @@
-# Submission System: Приём работ и расширяемые анализаторы
+# Submission System: Приём работ, анализаторы и анализ сходства
 
-Система приёма, валидации и анализа лабораторных работ для онлайн-школы. Реализована в рамках Лабораторной работы №1 по траектории **AI и MLOps**. Проект демонстрирует архитектуру, готовую к интеграции ML-моделей и LLM-анализаторов.
+Система приёма, валидации и анализа лабораторных работ для онлайн-школы. Реализована в рамках Лабораторных работ №1–2 по траектории **AI и MLOps**. Проект демонстрирует архитектуру, готовую к интеграции ML-моделей и LLM-анализаторов, а также воспроизводимое сравнение методов поиска сходства кода.
 
 ## Функциональность
 
@@ -22,6 +22,76 @@
     -   Интерфейсы `InputPreparer` и `FeedbackFormatter`.
     -   Stub-модель с детерминированным результатом и фиксацией версии схемы признаков.
     -   Конфигурация режимов `ml`/`llm` с расчётом `config_hash`.
+
+## ЛР2: Анализ сходства и оценка качества
+
+Добавлен отдельный слой `submission_system.similarity`, который не меняет
+приём и валидацию ЛР1:
+
+-   **Учебный корпус** `data/corpus/`: 40 пар, 60 сдач, 20 семейств вариантов,
+    10 пар с разрешённым шаблоном. У каждой пары есть `assignment_id`,
+    `family_id`, `derivation_relation` и `template_only`.
+-   **Потоковое чтение JSONL** через генераторы: `iter_jsonl`,
+    `iter_corpus_pairs`, `iter_candidate_pairs_streaming`.
+-   **Token baseline**: `tokenize` отбрасывает комментарии и служебные токены,
+    строки шаблона выносятся отдельно; сходство — Jaccard по 3-граммам.
+-   **Второй метод**: TF-IDF по токенам кода и cosine. Векторизатор обучается
+    только на tuning-сдачах, evaluation только `transform` (без повторного fit).
+-   **Признаки пары** для ML: Jaccard, cosine, длины, доля шаблона, расхождение
+    методов и др. (`artifacts/lab2/pair_features.jsonl`).
+-   **Retrieval для LLM**: сначала TF-IDF находит кандидатов, затем
+    детерминированная LLM-заглушка формирует feedback. Один вопрос «плагиат?»
+    к LLM не используется.
+-   **Воспроизводимый эксперимент**: порог выбирается на tuning, метрики
+    считаются на evaluation; семьи вариантов не пересекают границу split.
+-   **`review_required`**: решение по порогу, матрица ошибок, precision, recall,
+    F1 и доля неопределённых результатов.
+-   **Разбор ошибок**: FP/FN с причинами; обязательный случай общего шаблона.
+-   **Профилирование**: время и пиковая память на 100/1000/5000 записей,
+    3 повтора, median/mean.
+-   **ML против порога**: логистическая регрессия на признаках пары,
+    bootstrap и grouped-CV для оценки нестабильности.
+-   **MLflow**: параметры, метрики и артефакты разбиения пишутся в локальный
+    tracking backend (`mlflow.db` + `mlruns/`); при отсутствии пакета
+    предусмотрен JSON-fallback.
+-   **Версия отчёта**: `report_version`, `config_hash`, `template_fingerprint`,
+    `corpus_fingerprint` в `summary.json` и MLflow.
+-   **Демонстрация нового шаблона**: `template-demo` показывает изменение
+    конфигурации, score и `review_required` без правки корпуса.
+
+### Запуск ЛР2
+
+```bash
+# Собрать корпус из детерминированного генератора
+python scripts/build_corpus.py
+
+# Сравнить baseline и TF-IDF, сохранить отчёт
+python -m submission_system.similarity.cli evaluate --corpus data/corpus
+
+# Разбор ошибок, включая общий шаблон
+python -m submission_system.similarity.cli errors --corpus data/corpus
+
+# Демонстрация добавления нового разрешённого шаблона
+python -m submission_system.similarity.cli template-demo --corpus data/corpus
+
+# ML-классификатор против threshold baseline + MLflow-run
+python -m submission_system.similarity.cli ml --corpus data/corpus --seeds 20
+
+# Посмотреть MLflow-run
+mlflow ui --backend-store-uri sqlite:///mlflow.db
+
+# Retrieval кандидатов для выбранной сдачи
+python -m submission_system.similarity.cli retrieve \
+    --corpus data/corpus --submission sub-F18-a --top-k 5
+
+# Профилирование 100/1000/5000 записей
+python scripts/profile_pipeline.py --sizes 100,1000,5000 --repeats 3 --seed 0
+
+# Замер памяти: потоковое чтение vs полный индекс
+python scripts/benchmark_memory.py --corpus data/corpus
+```
+
+Подробности, результаты и ограничения — в `docs/LAB2.md`.
 
 ## Установка и запуск
 
@@ -61,8 +131,14 @@
 -   `src/submission_system/analysis_service.py` — Центральный сервис анализа.
 -   `src/submission_system/ml_stub.py` — Stub-модель и интерфейсы подготовки входа.
 -   `src/submission_system/config.py` — Конфигурация режимов обработки.
--   `tests/` — Комплексные тесты приёмки и контрактные тесты.
--   `data/` — Тестовые наборы данных.
+-   `src/submission_system/tokenizer.py` - Токенизация кода для анализа сходства.
+-   `src/submission_system/similarity/` - Корпус, baseline, TF-IDF, пары, признаки, retrieval, оценка, разбор ошибок и ML.
+-   `scripts/build_corpus.py` - Детерминированная сборка учебного корпуса.
+-   `scripts/benchmark_memory.py` - Замер памяти для потокового чтения и индекса.
+-   `scripts/profile_pipeline.py` - Профилирование времени и памяти на 100/1000/5000 записей.
+-   `tests/` - Комплексные тесты приёмки, контрактные тесты и тесты ЛР2.
+-   `data/` - Тестовые наборы данных и корпус ЛР2.
+-   `docs/LAB2.md` - технический отчёт ЛР2; `ОТЧЁТ_ЛР2.md` - итоговый отчёт.
 
 ## Архитектурные решения
 

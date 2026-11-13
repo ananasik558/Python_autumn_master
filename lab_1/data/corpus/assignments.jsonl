@@ -1,0 +1,4 @@
+{"assignment_id": "hw_loops", "title": "Сумма чётных чисел", "allowed_template": "", "requirements": {"skills": ["for", "if", "sum"], "language": "python"}}
+{"assignment_id": "hw_strings", "title": "Нормализация слов", "allowed_template": "", "requirements": {"skills": ["str", "re", "string"], "language": "python"}}
+{"assignment_id": "hw_recursion", "title": "Рекурсивное разворачивание списка", "allowed_template": "", "requirements": {"skills": ["recursion", "list"], "language": "python"}}
+{"assignment_id": "hw_template", "title": "Подсчёт длинных слов (разрешённый шаблон)", "allowed_template": "from typing import Iterable\n\nLIMIT = 3\n\n\ndef solve(words: Iterable[str]) -> int:\n    \"\"\"Вернуть количество слов длиннее LIMIT символов.\"\"\"\n    return count_long(words)\n", "requirements": {"skills": ["iterable", "template"], "language": "python"}}
