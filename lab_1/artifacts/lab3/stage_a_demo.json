@@ -1,0 +1,125 @@
+{
+  "report_version": "3.0.0-stage-a",
+  "status_contract": [
+    "queued",
+    "running",
+    "succeeded",
+    "failed",
+    "timed_out",
+    "cancelled",
+    "rejected"
+  ],
+  "queue": {
+    "concurrency_limit": 1,
+    "queue_limit": 1,
+    "pending_after_submit": 1,
+    "starting_after_submit": 1,
+    "submissions": [
+      {
+        "accepted": true,
+        "error_code": null,
+        "status": "succeeded"
+      },
+      {
+        "accepted": true,
+        "error_code": null,
+        "status": "succeeded"
+      },
+      {
+        "accepted": false,
+        "error_code": "queue_full",
+        "status": "rejected"
+      }
+    ],
+    "third_submission_saved": true
+  },
+  "timeout": {
+    "job_id": "job-f788840aaecb4aa7a1449cf441abe5c1",
+    "submission_id": "demo-sub-10",
+    "status": "timed_out",
+    "error_code": "timeout",
+    "attempt_no": 1,
+    "timeout_seconds": 0.05,
+    "started_at": "2026-11-26T08:43:26.927479+00:00",
+    "finished_at": "2026-11-26T08:43:26.989192+00:00",
+    "score": null
+  },
+  "cancellation": {
+    "queued_cancel_accepted": true,
+    "running_cancel_accepted": true,
+    "queued_job": {
+      "job_id": "job-8c4cf63e3dd04775a8c3ed5d94be09c1",
+      "submission_id": "demo-sub-21",
+      "status": "cancelled",
+      "error_code": "cancelled",
+      "attempt_no": 1,
+      "timeout_seconds": 30.0,
+      "started_at": null,
+      "finished_at": "2026-11-26T08:43:26.990180+00:00",
+      "score": null
+    },
+    "running_job": {
+      "job_id": "job-c31b08375481456ab3faafcfdcb63d41",
+      "submission_id": "demo-sub-20",
+      "status": "cancelled",
+      "error_code": "cancelled",
+      "attempt_no": 1,
+      "timeout_seconds": 30.0,
+      "started_at": "2026-11-26T08:43:26.990308+00:00",
+      "finished_at": "2026-11-26T08:43:27.004312+00:00",
+      "score": null
+    }
+  },
+  "error_codes": {
+    "unavailable": {
+      "job_id": "job-7da66edf37cf49a8bf56a571ceb1872d",
+      "submission_id": "demo-sub-30",
+      "status": "failed",
+      "error_code": "model_unavailable",
+      "attempt_no": 1,
+      "timeout_seconds": 30.0,
+      "started_at": "2026-11-26T08:43:27.004624+00:00",
+      "finished_at": "2026-11-26T08:43:27.004710+00:00",
+      "score": null
+    },
+    "invalid": {
+      "job_id": "job-5c69a1d2155c402c9d6db275aac028af",
+      "submission_id": "demo-sub-31",
+      "status": "failed",
+      "error_code": "invalid_model_response",
+      "attempt_no": 1,
+      "timeout_seconds": 30.0,
+      "started_at": "2026-11-26T08:43:27.004811+00:00",
+      "finished_at": "2026-11-26T08:43:27.004887+00:00",
+      "score": null
+    },
+    "cancelled": {
+      "job_id": "job-1e025af0745546e4b4de153b7fe5fda8",
+      "submission_id": "demo-sub-32",
+      "status": "cancelled",
+      "error_code": "cancelled",
+      "attempt_no": 1,
+      "timeout_seconds": 30.0,
+      "started_at": "2026-11-26T08:43:27.004981+00:00",
+      "finished_at": "2026-11-26T08:43:27.005049+00:00",
+      "score": null
+    }
+  },
+  "model_adapter": {
+    "batch_size": 2,
+    "concurrency_limit": 2,
+    "scores": [
+      0.14,
+      0.14,
+      0.14,
+      0.14,
+      0.14
+    ],
+    "observed_batch_sizes": [
+      2,
+      2,
+      1
+    ],
+    "max_active_model_calls": 2
+  }
+}

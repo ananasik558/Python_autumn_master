@@ -1,0 +1,242 @@
+{
+  "parameters": {
+    "jobs": 8,
+    "workers": 4,
+    "iterations": 400000,
+    "repeats": 3,
+    "corpus": "synthetic CPU load only; quality is not measured"
+  },
+  "environment": {
+    "python": "3.13.14",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "cpu_count": 12
+  },
+  "results": {
+    "sequential": {
+      "elapsed_seconds": {
+        "median": 0.3663075999938883,
+        "mean": 0.3688362000102643,
+        "min": 0.3643997000181116,
+        "max": 0.37580130001879297
+      },
+      "jobs_per_second": {
+        "median": 21.83956871256146,
+        "mean": 21.693776355419484,
+        "min": 21.28784546407886,
+        "max": 21.95391488961813
+      },
+      "runs": [
+        {
+          "executor_kind": "sequential",
+          "jobs": 8,
+          "workers": 1,
+          "iterations": 400000,
+          "elapsed_seconds": 0.3643997000181116,
+          "jobs_per_second": 21.95391488961813
+        },
+        {
+          "executor_kind": "sequential",
+          "jobs": 8,
+          "workers": 1,
+          "iterations": 400000,
+          "elapsed_seconds": 0.3663075999938883,
+          "jobs_per_second": 21.83956871256146
+        },
+        {
+          "executor_kind": "sequential",
+          "jobs": 8,
+          "workers": 1,
+          "iterations": 400000,
+          "elapsed_seconds": 0.37580130001879297,
+          "jobs_per_second": 21.28784546407886
+        }
+      ]
+    },
+    "thread": {
+      "elapsed_seconds": {
+        "median": 0.34071449999464676,
+        "mean": 0.3404955666531653,
+        "min": 0.33711269998457283,
+        "max": 0.34365949998027645
+      },
+      "jobs_per_second": {
+        "median": 23.480069090472213,
+        "mean": 23.496620441659537,
+        "min": 23.278855961959852,
+        "max": 23.730936272546543
+      },
+      "runs": [
+        {
+          "executor_kind": "thread",
+          "jobs": 8,
+          "workers": 4,
+          "iterations": 400000,
+          "elapsed_seconds": 0.33711269998457283,
+          "jobs_per_second": 23.730936272546543,
+          "stats": {
+            "concurrency_limit": 4,
+            "queue_limit": 8,
+            "executor_kind": "thread",
+            "queued": 0,
+            "running": 0,
+            "total": 8,
+            "by_status": {
+              "queued": 0,
+              "running": 0,
+              "succeeded": 8,
+              "failed": 0,
+              "timed_out": 0,
+              "cancelled": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "executor_kind": "thread",
+          "jobs": 8,
+          "workers": 4,
+          "iterations": 400000,
+          "elapsed_seconds": 0.34071449999464676,
+          "jobs_per_second": 23.480069090472213,
+          "stats": {
+            "concurrency_limit": 4,
+            "queue_limit": 8,
+            "executor_kind": "thread",
+            "queued": 0,
+            "running": 0,
+            "total": 8,
+            "by_status": {
+              "queued": 0,
+              "running": 0,
+              "succeeded": 8,
+              "failed": 0,
+              "timed_out": 0,
+              "cancelled": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "executor_kind": "thread",
+          "jobs": 8,
+          "workers": 4,
+          "iterations": 400000,
+          "elapsed_seconds": 0.34365949998027645,
+          "jobs_per_second": 23.278855961959852,
+          "stats": {
+            "concurrency_limit": 4,
+            "queue_limit": 8,
+            "executor_kind": "thread",
+            "queued": 0,
+            "running": 0,
+            "total": 8,
+            "by_status": {
+              "queued": 0,
+              "running": 0,
+              "succeeded": 8,
+              "failed": 0,
+              "timed_out": 0,
+              "cancelled": 0,
+              "rejected": 0
+            }
+          }
+        }
+      ]
+    },
+    "process": {
+      "elapsed_seconds": {
+        "median": 0.5240254999953322,
+        "mean": 0.5244683333245727,
+        "min": 0.5127484999829903,
+        "max": 0.5366309999953955
+      },
+      "jobs_per_second": {
+        "median": 15.266432645112234,
+        "mean": 15.258815549974027,
+        "min": 14.907823066629849,
+        "max": 15.602190938180001
+      },
+      "runs": [
+        {
+          "executor_kind": "process",
+          "jobs": 8,
+          "workers": 4,
+          "iterations": 400000,
+          "elapsed_seconds": 0.5366309999953955,
+          "jobs_per_second": 14.907823066629849,
+          "stats": {
+            "concurrency_limit": 4,
+            "queue_limit": 8,
+            "executor_kind": "process",
+            "queued": 0,
+            "running": 0,
+            "total": 8,
+            "by_status": {
+              "queued": 0,
+              "running": 0,
+              "succeeded": 8,
+              "failed": 0,
+              "timed_out": 0,
+              "cancelled": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "executor_kind": "process",
+          "jobs": 8,
+          "workers": 4,
+          "iterations": 400000,
+          "elapsed_seconds": 0.5127484999829903,
+          "jobs_per_second": 15.602190938180001,
+          "stats": {
+            "concurrency_limit": 4,
+            "queue_limit": 8,
+            "executor_kind": "process",
+            "queued": 0,
+            "running": 0,
+            "total": 8,
+            "by_status": {
+              "queued": 0,
+              "running": 0,
+              "succeeded": 8,
+              "failed": 0,
+              "timed_out": 0,
+              "cancelled": 0,
+              "rejected": 0
+            }
+          }
+        },
+        {
+          "executor_kind": "process",
+          "jobs": 8,
+          "workers": 4,
+          "iterations": 400000,
+          "elapsed_seconds": 0.5240254999953322,
+          "jobs_per_second": 15.266432645112234,
+          "stats": {
+            "concurrency_limit": 4,
+            "queue_limit": 8,
+            "executor_kind": "process",
+            "queued": 0,
+            "running": 0,
+            "total": 8,
+            "by_status": {
+              "queued": 0,
+              "running": 0,
+              "succeeded": 8,
+              "failed": 0,
+              "timed_out": 0,
+              "cancelled": 0,
+              "rejected": 0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "thread_vs_process_ratio": 0.6501868706726709,
+    "decision": "Выбран пул потоков: на учебном объёме он не требует сериализации объектов между процессами и запускается без spawn-накладных расходов. Пул процессов оставлен как опция для будущих тяжёлых CPU-адаптеров; тайм-аут, отмена и ограничение конкурентности от модели исполнения не зависят."
+  }
+}

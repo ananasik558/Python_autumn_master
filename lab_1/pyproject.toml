@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "submission-system"
-version = "0.2.0"
-description = "Приём, валидация и анализ студенческих работ: token baseline, TF-IDF и retrieval"
+version = "0.3.0"
+description = "Приём, валидация, анализ сходства и ограниченный исполнитель заданий"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
