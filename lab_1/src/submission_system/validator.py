@@ -42,6 +42,7 @@ def validate_submission(data: dict, line_num: int) -> tuple[Optional[Submission]
         code=raw_code,
         text=raw_text,
         ai_declaration=data.get('ai_declaration'),
+        assignment_id=str(data.get('assignment_id') or ''),
         raw_content_hash=calculate_hash(combined_content)
     )
     

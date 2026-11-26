@@ -133,7 +133,7 @@ python scripts/benchmark_memory.py --corpus data/corpus
 python scripts/lab3_demo.py
 
 # Сравнение последовательного запуска, потоков и процессов
-python scripts/benchmark_executor.py --jobs 8 --workers 4 --iterations 400000 --repeats 3
+python scripts/benchmark_executor.py --jobs 20 --workers 3 --queue-limit 20 --iterations 200000 --repeats 3
 
 # Только тесты этапа А
 pytest tests/ -q -k "jobs"
@@ -141,6 +141,50 @@ pytest tests/ -q -k "jobs"
 
 Результаты: `artifacts/lab3/stage_a_demo.json` и
 `artifacts/lab3/executor_benchmark.json`. Подробности — в `docs/LAB3.md`.
+
+## ЛР3, этап Б: SQLite и FastAPI
+
+Добавлен прикладной слой `submission_system.api` и постоянное хранение
+`submission_system.persistence`:
+
+-   **SQLite:** `submissions`, `jobs`, `analysis_reports`,
+    `idempotency_keys`. Оригинальная сдача неизменяема.
+-   **Атомарность:** `succeeded` и отчёт записываются в одной транзакции;
+    `succeeded` без отчёта не сохраняется и не выдаётся как успех.
+-   **Восстановление:** при старте `queued`/`running` задачи помечаются
+    `failed` / `interrupted`, несогласованные `succeeded` —
+    `inconsistent_state`; история и `attempt_no` сохраняются.
+-   **Идемпотентность:** `idempotency_key` возвращает тот же job при
+    совпадении `submission_hash`, `analyzer_id`, `config_hash`; другой payload
+    даёт `409`. Новый ключ после failed создаёт новую попытку.
+-   **FastAPI:** сдачи, запуск анализа, история, статус, отчёт, отмена и
+    список адаптеров; доступ по `X-API-Key`/Bearer, `/health` открыт.
+-   **Роли:** student видит только свои работы, teacher — только отчёты своих
+    заданий, admin — всё; ключи задаются через `ANALYZER_STUDENT_KEYS` и
+    `ANALYZER_TEACHER_KEYS`.
+-   **Метаданные:** модель, индекс, промпт, `config_hash` и `mlflow_run_id`
+    сохраняются в отчёте; секреты провайдера в ответы не попадают.
+-   **Baseline + model:** оба адаптера работают через один контракт;
+    `ANALYZER_MODEL_MODE=unavailable` позволяет работать без внешней модели.
+
+### Запуск ЛР3-B
+
+```bash
+# Сервис; ключ по умолчанию dev-api-key, БД artifacts/lab3/analysis.db
+uvicorn submission_system.api.app:create_app --factory --reload
+
+# Swagger
+# http://127.0.0.1:8000/docs
+
+# Демонстрация API: SQLite, идемпотентность, рестарт
+python scripts/lab3b_demo.py
+
+# Тесты этапа Б
+pytest tests/test_persistence.py tests/test_api.py -q
+```
+
+Результат демонстрации — `artifacts/lab3b/api_demo.json`. Подробности — в
+`docs/LAB3_B.md` и объединённом `ОТЧЁТ_ЛР3.md`.
 
 ## Установка и запуск
 
@@ -155,8 +199,10 @@ pytest tests/ -q -k "jobs"
 
 2.  Установите пакет в режиме разработки:
     ```bash
-    pip install -e .
+    pip install -e ".[api,dev]"
     ```
+
+    Для этапов ЛР1–ЛР3-A достаточно `pip install -e .`.
 
 3.  Запустите импорт через CLI:
     ```bash
@@ -183,15 +229,20 @@ pytest tests/ -q -k "jobs"
 -   `src/submission_system/tokenizer.py` - Токенизация кода для анализа сходства.
 -   `src/submission_system/similarity/` - Корпус, baseline, TF-IDF, пары, признаки, retrieval, оценка, разбор ошибок и ML.
 -   `src/submission_system/jobs/` - Модели задач, ограниченный исполнитель, адаптеры, модельный адаптер и статусы ЛР3-A.
+-   `src/submission_system/persistence/` - SQLite-хранилище сдач, задач, отчётов и idempotency keys.
+-   `src/submission_system/api/` - FastAPI-сервис, Pydantic-схемы, доступ по API-ключу.
 -   `scripts/build_corpus.py` - Детерминированная сборка учебного корпуса.
 -   `scripts/benchmark_memory.py` - Замер памяти для потокового чтения и индекса.
 -   `scripts/profile_pipeline.py` - Профилирование времени и памяти на 100/1000/5000 записей.
 -   `scripts/lab3_demo.py` - Демонстрация очереди, тайм-аута, отмены и кодов ошибок.
+-   `scripts/lab3b_demo.py` - Демонстрация SQLite, идемпотентности и API.
 -   `scripts/benchmark_executor.py` - Сравнение последовательного запуска, потоков и процессов.
--   `tests/` - Комплексные тесты приёмки, контрактные тесты, тесты ЛР2 и ЛР3-A.
+-   `tests/` - Комплексные тесты приёмки, контрактные тесты, тесты ЛР2, ЛР3-A и ЛР3-B.
 -   `data/` - Тестовые наборы данных и корпус ЛР2.
 -   `docs/LAB2.md` - технический отчёт ЛР2; `ОТЧЁТ_ЛР2.md` - итоговый отчёт.
--   `docs/LAB3.md` - технический отчёт ЛР3-A; `ОТЧЁТ_ЛР3.md` - итоговый отчёт.
+-   `docs/LAB3.md` - технический отчёт ЛР3-A.
+-   `docs/LAB3_B.md` - технический отчёт ЛР3-B.
+-   `ОТЧЁТ_ЛР3.md` - объединённый итоговый отчёт по этапам А и Б.
 
 ## Архитектурные решения
 

@@ -23,8 +23,8 @@ class Submission:
     code: Optional[str] = None
     text: Optional[str] = None
     ai_declaration: Optional[bool] = None
-    
     raw_content_hash: Optional[str] = None 
+    assignment_id: str = ""
 
 @dataclass
 class ManifestEntry:
@@ -47,6 +47,12 @@ class AnalysisReport:
     rubric_feedback: str = ""
     similarity: Optional[float] = None
     evidence: List[Evidence] = field(default_factory=list)
+    # Метаданные версии нужны для воспроизводимости и аудита ЛР3-Б.
+    model_version: Optional[str] = None
+    index_version: Optional[str] = None
+    prompt_version: Optional[str] = None
+    mlflow_run_id: Optional[str] = None
+    config_hash: Optional[str] = None
 
 @dataclass
 class Assignment:

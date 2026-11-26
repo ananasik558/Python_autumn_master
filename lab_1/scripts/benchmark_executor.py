@@ -42,7 +42,13 @@ def _submission(index: int) -> Submission:
     )
 
 
-async def _run_pool(kind: str, jobs: int, workers: int, iterations: int) -> dict[str, Any]:
+async def _run_pool(
+    kind: str,
+    jobs: int,
+    workers: int,
+    iterations: int,
+    queue_limit: int,
+) -> dict[str, Any]:
     adapter = SyncAnalyzerAdapter(
         CpuBoundAnalyzer(iterations=iterations),
         Assignment(assignment_id="bench"),
@@ -51,29 +57,33 @@ async def _run_pool(kind: str, jobs: int, workers: int, iterations: int) -> dict
         {"cpu": adapter},
         ExecutorConfig(
             concurrency_limit=workers,
-            queue_limit=jobs,
+            queue_limit=queue_limit,
             executor_kind=kind,  # type: ignore[arg-type]
         ),
     )
     started = time.perf_counter()
     results = [await executor.submit(_submission(index), "cpu") for index in range(jobs)]
+    accepted = [result for result in results if result.accepted]
+    rejected = [result for result in results if not result.accepted]
     completed = await executor.wait_all(
-        [result.job.job_id for result in results],
+        [result.job.job_id for result in accepted],
         timeout=120,
     )
     elapsed = time.perf_counter() - started
     stats = executor.stats()
     await executor.shutdown()
-    if any(job.status.value != "succeeded" for job in completed):
-        raise RuntimeError(
-            "Не все задачи завершились успешно: "
-            + ", ".join(f"{job.job_id}:{job.status.value}" for job in completed)
-        )
+    failed = [job for job in completed if job.status.value != "succeeded"]
+    errors = len(rejected) + len(failed)
     return {
         "executor_kind": kind,
         "jobs": jobs,
         "workers": workers,
+        "queue_limit": queue_limit,
         "iterations": iterations,
+        "accepted": len(accepted),
+        "rejected": len(rejected),
+        "failed_jobs": len(failed),
+        "errors": errors,
         "elapsed_seconds": elapsed,
         "jobs_per_second": jobs / elapsed if elapsed else None,
         "stats": stats,
@@ -94,7 +104,12 @@ def _run_sequential(jobs: int, iterations: int) -> dict[str, Any]:
         "executor_kind": "sequential",
         "jobs": jobs,
         "workers": 1,
+        "queue_limit": jobs,
         "iterations": iterations,
+        "accepted": jobs,
+        "rejected": 0,
+        "failed_jobs": 0,
+        "errors": 0,
         "elapsed_seconds": elapsed,
         "jobs_per_second": jobs / elapsed if elapsed else None,
     }
@@ -119,7 +134,13 @@ async def main_async(args: argparse.Namespace) -> dict[str, Any]:
         cases["sequential"].append(_run_sequential(args.jobs, args.iterations))
         for kind in ("thread", "process"):
             cases[kind].append(
-                await _run_pool(kind, args.jobs, args.workers, args.iterations)
+                await _run_pool(
+                    kind,
+                    args.jobs,
+                    args.workers,
+                    args.iterations,
+                    args.queue_limit,
+                )
             )
 
     aggregated = {}
@@ -133,13 +154,18 @@ async def main_async(args: argparse.Namespace) -> dict[str, Any]:
                     if run["jobs_per_second"] is not None
                 ]
             ),
+            "errors_total": sum(run["errors"] for run in runs),
+            "errors_per_run": _summary(
+                [float(run["errors"]) for run in runs]
+            ),
             "runs": runs,
         }
 
     thread_median = aggregated["thread"]["elapsed_seconds"]["median"]
+    sequential_median = aggregated["sequential"]["elapsed_seconds"]["median"]
     process_median = aggregated["process"]["elapsed_seconds"]["median"]
     decision = (
-        "Выбран пул потоков: на учебном объёме он не требует сериализации "
+        "Выбран пул потоков: на учебном CPU-наборе он не требует сериализации "
         "объектов между процессами и запускается без spawn-накладных расходов. "
         "Пул процессов оставлен как опция для будущих тяжёлых CPU-адаптеров; "
         "тайм-аут, отмена и ограничение конкурентности от модели исполнения не зависят."
@@ -148,8 +174,14 @@ async def main_async(args: argparse.Namespace) -> dict[str, Any]:
         "parameters": {
             "jobs": args.jobs,
             "workers": args.workers,
+            "queue_limit": args.queue_limit,
             "iterations": args.iterations,
             "repeats": args.repeats,
+            "workload": (
+                f"{args.jobs} synthetic submissions, {args.workers} workers, "
+                f"queue_limit={args.queue_limit}; each job calls CpuBoundAnalyzer "
+                f"with {args.iterations} iterations; no adapter errors are injected"
+            ),
             "corpus": "synthetic CPU load only; quality is not measured",
         },
         "environment": {
@@ -159,6 +191,9 @@ async def main_async(args: argparse.Namespace) -> dict[str, Any]:
         },
         "results": aggregated,
         "comparison": {
+            "thread_vs_sequential_ratio": (
+                thread_median / sequential_median if sequential_median else None
+            ),
             "thread_vs_process_ratio": (
                 thread_median / process_median if process_median else None
             ),
@@ -177,10 +212,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--jobs", type=int, default=8)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument("--queue-limit", type=int, default=None)
     parser.add_argument("--iterations", type=int, default=400_000)
     parser.add_argument("--repeats", type=int, default=2)
     parser.add_argument("--output", default="artifacts/lab3/executor_benchmark.json")
     args = parser.parse_args()
+    if args.queue_limit is None:
+        args.queue_limit = args.jobs
 
     payload = asyncio.run(main_async(args))
     output = Path(args.output)
@@ -193,7 +231,11 @@ def main() -> int:
     for name, result in payload["results"].items():
         median = result["elapsed_seconds"]["median"]
         throughput = result["jobs_per_second"]["median"]
-        print(f"  {name:<12} {median:8.3f}s  {throughput:8.2f} jobs/s")
+        errors = result["errors_total"]
+        print(
+            f"  {name:<12} {median:8.3f}s  {throughput:8.2f} jobs/s  "
+            f"errors={errors}"
+        )
     print(f"saved: {output}")
     return 0
 

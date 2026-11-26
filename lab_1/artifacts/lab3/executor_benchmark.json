@@ -1,9 +1,11 @@
 {
   "parameters": {
-    "jobs": 8,
-    "workers": 4,
-    "iterations": 400000,
+    "jobs": 20,
+    "workers": 3,
+    "queue_limit": 20,
+    "iterations": 200000,
     "repeats": 3,
+    "workload": "20 synthetic submissions, 3 workers, queue_limit=20; each job calls CpuBoundAnalyzer with 200000 iterations; no adapter errors are injected",
     "corpus": "synthetic CPU load only; quality is not measured"
   },
   "environment": {
@@ -14,76 +16,111 @@
   "results": {
     "sequential": {
       "elapsed_seconds": {
-        "median": 0.3663075999938883,
-        "mean": 0.3688362000102643,
-        "min": 0.3643997000181116,
-        "max": 0.37580130001879297
+        "median": 0.4143577999784611,
+        "mean": 0.41080766665011953,
+        "min": 0.3980903999763541,
+        "max": 0.41997479999554344
       },
       "jobs_per_second": {
-        "median": 21.83956871256146,
-        "mean": 21.693776355419484,
-        "min": 21.28784546407886,
-        "max": 21.95391488961813
+        "median": 48.26746353282025,
+        "mean": 48.70973782992649,
+        "min": 47.62190493384896,
+        "max": 50.23984502311025
+      },
+      "errors_total": 0,
+      "errors_per_run": {
+        "median": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0
       },
       "runs": [
         {
           "executor_kind": "sequential",
-          "jobs": 8,
+          "jobs": 20,
           "workers": 1,
-          "iterations": 400000,
-          "elapsed_seconds": 0.3643997000181116,
-          "jobs_per_second": 21.95391488961813
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.3980903999763541,
+          "jobs_per_second": 50.23984502311025
         },
         {
           "executor_kind": "sequential",
-          "jobs": 8,
+          "jobs": 20,
           "workers": 1,
-          "iterations": 400000,
-          "elapsed_seconds": 0.3663075999938883,
-          "jobs_per_second": 21.83956871256146
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.4143577999784611,
+          "jobs_per_second": 48.26746353282025
         },
         {
           "executor_kind": "sequential",
-          "jobs": 8,
+          "jobs": 20,
           "workers": 1,
-          "iterations": 400000,
-          "elapsed_seconds": 0.37580130001879297,
-          "jobs_per_second": 21.28784546407886
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.41997479999554344,
+          "jobs_per_second": 47.62190493384896
         }
       ]
     },
     "thread": {
       "elapsed_seconds": {
-        "median": 0.34071449999464676,
-        "mean": 0.3404955666531653,
-        "min": 0.33711269998457283,
-        "max": 0.34365949998027645
+        "median": 0.40445980001823045,
+        "mean": 0.4017091333322848,
+        "min": 0.39526229997863993,
+        "max": 0.405405299999984
       },
       "jobs_per_second": {
-        "median": 23.480069090472213,
-        "mean": 23.496620441659537,
-        "min": 23.278855961959852,
-        "max": 23.730936272546543
+        "median": 49.448672028959436,
+        "mean": 49.793776359894714,
+        "min": 49.333346160005284,
+        "max": 50.599310890719416
+      },
+      "errors_total": 0,
+      "errors_per_run": {
+        "median": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0
       },
       "runs": [
         {
           "executor_kind": "thread",
-          "jobs": 8,
-          "workers": 4,
-          "iterations": 400000,
-          "elapsed_seconds": 0.33711269998457283,
-          "jobs_per_second": 23.730936272546543,
+          "jobs": 20,
+          "workers": 3,
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.39526229997863993,
+          "jobs_per_second": 50.599310890719416,
           "stats": {
-            "concurrency_limit": 4,
-            "queue_limit": 8,
+            "concurrency_limit": 3,
+            "queue_limit": 20,
             "executor_kind": "thread",
             "queued": 0,
+            "starting": 0,
             "running": 0,
-            "total": 8,
+            "total": 20,
             "by_status": {
               "queued": 0,
               "running": 0,
-              "succeeded": 8,
+              "succeeded": 20,
               "failed": 0,
               "timed_out": 0,
               "cancelled": 0,
@@ -93,22 +130,28 @@
         },
         {
           "executor_kind": "thread",
-          "jobs": 8,
-          "workers": 4,
-          "iterations": 400000,
-          "elapsed_seconds": 0.34071449999464676,
-          "jobs_per_second": 23.480069090472213,
+          "jobs": 20,
+          "workers": 3,
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.405405299999984,
+          "jobs_per_second": 49.333346160005284,
           "stats": {
-            "concurrency_limit": 4,
-            "queue_limit": 8,
+            "concurrency_limit": 3,
+            "queue_limit": 20,
             "executor_kind": "thread",
             "queued": 0,
+            "starting": 0,
             "running": 0,
-            "total": 8,
+            "total": 20,
             "by_status": {
               "queued": 0,
               "running": 0,
-              "succeeded": 8,
+              "succeeded": 20,
               "failed": 0,
               "timed_out": 0,
               "cancelled": 0,
@@ -118,22 +161,28 @@
         },
         {
           "executor_kind": "thread",
-          "jobs": 8,
-          "workers": 4,
-          "iterations": 400000,
-          "elapsed_seconds": 0.34365949998027645,
-          "jobs_per_second": 23.278855961959852,
+          "jobs": 20,
+          "workers": 3,
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.40445980001823045,
+          "jobs_per_second": 49.448672028959436,
           "stats": {
-            "concurrency_limit": 4,
-            "queue_limit": 8,
+            "concurrency_limit": 3,
+            "queue_limit": 20,
             "executor_kind": "thread",
             "queued": 0,
+            "starting": 0,
             "running": 0,
-            "total": 8,
+            "total": 20,
             "by_status": {
               "queued": 0,
               "running": 0,
-              "succeeded": 8,
+              "succeeded": 20,
               "failed": 0,
               "timed_out": 0,
               "cancelled": 0,
@@ -145,36 +194,49 @@
     },
     "process": {
       "elapsed_seconds": {
-        "median": 0.5240254999953322,
-        "mean": 0.5244683333245727,
-        "min": 0.5127484999829903,
-        "max": 0.5366309999953955
+        "median": 0.5057762999786064,
+        "mean": 0.5050668333327243,
+        "min": 0.503456600010395,
+        "max": 0.5059676000091713
       },
       "jobs_per_second": {
-        "median": 15.266432645112234,
-        "mean": 15.258815549974027,
-        "min": 14.907823066629849,
-        "max": 15.602190938180001
+        "median": 39.54317353511023,
+        "mean": 39.5989222858423,
+        "min": 39.528222755048894,
+        "max": 39.725370567367776
+      },
+      "errors_total": 0,
+      "errors_per_run": {
+        "median": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "max": 0.0
       },
       "runs": [
         {
           "executor_kind": "process",
-          "jobs": 8,
-          "workers": 4,
-          "iterations": 400000,
-          "elapsed_seconds": 0.5366309999953955,
-          "jobs_per_second": 14.907823066629849,
+          "jobs": 20,
+          "workers": 3,
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.5057762999786064,
+          "jobs_per_second": 39.54317353511023,
           "stats": {
-            "concurrency_limit": 4,
-            "queue_limit": 8,
+            "concurrency_limit": 3,
+            "queue_limit": 20,
             "executor_kind": "process",
             "queued": 0,
+            "starting": 0,
             "running": 0,
-            "total": 8,
+            "total": 20,
             "by_status": {
               "queued": 0,
               "running": 0,
-              "succeeded": 8,
+              "succeeded": 20,
               "failed": 0,
               "timed_out": 0,
               "cancelled": 0,
@@ -184,22 +246,28 @@
         },
         {
           "executor_kind": "process",
-          "jobs": 8,
-          "workers": 4,
-          "iterations": 400000,
-          "elapsed_seconds": 0.5127484999829903,
-          "jobs_per_second": 15.602190938180001,
+          "jobs": 20,
+          "workers": 3,
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.5059676000091713,
+          "jobs_per_second": 39.528222755048894,
           "stats": {
-            "concurrency_limit": 4,
-            "queue_limit": 8,
+            "concurrency_limit": 3,
+            "queue_limit": 20,
             "executor_kind": "process",
             "queued": 0,
+            "starting": 0,
             "running": 0,
-            "total": 8,
+            "total": 20,
             "by_status": {
               "queued": 0,
               "running": 0,
-              "succeeded": 8,
+              "succeeded": 20,
               "failed": 0,
               "timed_out": 0,
               "cancelled": 0,
@@ -209,22 +277,28 @@
         },
         {
           "executor_kind": "process",
-          "jobs": 8,
-          "workers": 4,
-          "iterations": 400000,
-          "elapsed_seconds": 0.5240254999953322,
-          "jobs_per_second": 15.266432645112234,
+          "jobs": 20,
+          "workers": 3,
+          "queue_limit": 20,
+          "iterations": 200000,
+          "accepted": 20,
+          "rejected": 0,
+          "failed_jobs": 0,
+          "errors": 0,
+          "elapsed_seconds": 0.503456600010395,
+          "jobs_per_second": 39.725370567367776,
           "stats": {
-            "concurrency_limit": 4,
-            "queue_limit": 8,
+            "concurrency_limit": 3,
+            "queue_limit": 20,
             "executor_kind": "process",
             "queued": 0,
+            "starting": 0,
             "running": 0,
-            "total": 8,
+            "total": 20,
             "by_status": {
               "queued": 0,
               "running": 0,
-              "succeeded": 8,
+              "succeeded": 20,
               "failed": 0,
               "timed_out": 0,
               "cancelled": 0,
@@ -236,7 +310,8 @@
     }
   },
   "comparison": {
-    "thread_vs_process_ratio": 0.6501868706726709,
-    "decision": "Выбран пул потоков: на учебном объёме он не требует сериализации объектов между процессами и запускается без spawn-накладных расходов. Пул процессов оставлен как опция для будущих тяжёлых CPU-адаптеров; тайм-аут, отмена и ограничение конкурентности от модели исполнения не зависят."
+    "thread_vs_sequential_ratio": 0.9761124323935855,
+    "thread_vs_process_ratio": 0.7996812030048432,
+    "decision": "Выбран пул потоков: на учебном CPU-наборе он не требует сериализации объектов между процессами и запускается без spawn-накладных расходов. Пул процессов оставлен как опция для будущих тяжёлых CPU-адаптеров; тайм-аут, отмена и ограничение конкурентности от модели исполнения не зависят."
   }
 }

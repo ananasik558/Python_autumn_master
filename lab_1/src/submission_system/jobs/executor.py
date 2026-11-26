@@ -80,7 +80,8 @@ class AnalysisExecutor:
         adapters: Mapping[str, AnalysisAdapter] | Iterable[AnalysisAdapter],
         config: ExecutorConfig | None = None,
         *,
-        repository: InMemoryRepository | None = None,
+        repository: Any | None = None,
+        job_store: Any | None = None,
         pool: Executor | None = None,
     ) -> None:
         self.config = config or ExecutorConfig()
@@ -91,8 +92,10 @@ class AnalysisExecutor:
         if not self._adapters:
             raise ValueError("Нужен хотя бы один адаптер")
 
-        self.repository = repository or InMemoryRepository()
-        self.jobs = JobStore()
+        self.repository = (
+            repository if repository is not None else InMemoryRepository()
+        )
+        self.jobs = job_store if job_store is not None else JobStore()
         # Задачи, для которых уже зарезервировано место под немедленный старт.
         self._starting: deque[str] = deque()
         # Собственно очередь ожидания; её размер ограничен queue_limit.
@@ -199,6 +202,7 @@ class AnalysisExecutor:
                             job.mark_cancelled(
                                 "Исполнитель остановлен до старта задачи"
                             )
+                            self._persist_job(job)
                             self._signal_done(job_id)
                 self._condition.notify_all()
         else:
@@ -307,6 +311,7 @@ class AnalysisExecutor:
                 code=submission_obj.code,
                 text=submission_obj.text,
                 ai_declaration=submission_obj.ai_declaration,
+                assignment_id=submission_obj.assignment_id,
                 raw_content_hash=submission_digest,
             )
             self.repository.save(saved)
@@ -357,6 +362,67 @@ class AnalysisExecutor:
             self._condition.notify_all()
             return SubmitResult(accepted=True, job=job)
 
+    async def enqueue_prebuilt(self, job: AnalysisJob) -> SubmitResult:
+        """Ставит в очередь уже сохранённую задачу.
+
+        Нужно сервису этапа Б: job и idempotency_key записываются в SQLite
+        одной транзакцией, после чего задача передаётся исполнителю. Повторная
+        постановка того же job_id не создаёт вторую запись.
+        """
+
+        if self._closed:
+            raise RuntimeError("Нельзя ставить задачи после shutdown")
+        if self.config.auto_start:
+            self.start()
+        elif not self._started:
+            raise RuntimeError(
+                "auto_start=False: вызовите executor.start() перед постановкой задач"
+            )
+        if job.analyzer_id not in self._adapters:
+            raise KeyError(f"Неизвестный анализатор: {job.analyzer_id}")
+        if self.repository.get(job.submission_id) is None:
+            raise KeyError(f"Сдача не найдена: {job.submission_id}")
+        if job.status is not JobStatus.QUEUED:
+            raise JobStateError(
+                f"enqueue_prebuilt ожидает queued, получен {job.status.value}"
+            )
+        if job.job_id not in self.jobs:
+            self.jobs.add(job)
+
+        async with self._condition:
+            if job.job_id in self._starting or job.job_id in self._pending:
+                return SubmitResult(accepted=True, job=job)
+            if job.job_id in self._active:
+                return SubmitResult(accepted=True, job=self.jobs.require(job.job_id))
+            has_immediate_slot = (
+                len(self._active) + len(self._starting)
+                < self.config.concurrency_limit
+            )
+            if not has_immediate_slot and self._queue_is_full():
+                job.mark_rejected(
+                    JobErrorCode.QUEUE_FULL,
+                    (
+                        f"Очередь заполнена: concurrency_limit="
+                        f"{self.config.concurrency_limit}, "
+                        f"queue_limit={self.config.queue_limit}"
+                    ),
+                )
+                self.jobs.save(job)
+                self._events[job.job_id] = _make_event()
+                self._events[job.job_id].set()
+                return SubmitResult(
+                    accepted=False,
+                    job=job,
+                    error_code=JobErrorCode.QUEUE_FULL,
+                    message=job.error_message or "",
+                )
+
+            self._events[job.job_id] = _make_event()
+            target = self._starting if has_immediate_slot else self._pending
+            target.append(job.job_id)
+            self._condition.notify_all()
+            return SubmitResult(accepted=True, job=job)
+
     def _resolve_submission(self, submission: Submission | str) -> Submission:
         if isinstance(submission, Submission):
             return submission
@@ -398,6 +464,7 @@ class AnalysisExecutor:
                         queue.remove(job_id)
                         break
                 job.mark_cancelled("Задача отменена до старта")
+                self._persist_job(job)
                 self._signal_done(job_id)
                 self._condition.notify_all()
                 return True
@@ -446,6 +513,20 @@ class AnalysisExecutor:
             for job in self.jobs.values()
             if job.result is not None
         }
+
+    @property
+    def adapters(self) -> dict[str, AnalysisAdapter]:
+        return dict(self._adapters)
+
+    def get_adapter(self, analyzer_id: str) -> AnalysisAdapter:
+        return self._adapters[analyzer_id]
+
+    def _persist_job(self, job: AnalysisJob) -> None:
+        """Сохраняет снимок задачи, если хранилище это поддерживает."""
+
+        save = getattr(self.jobs, "save", None)
+        if save is not None:
+            save(job)
 
     def list_jobs(self, status: JobStatus | None = None) -> list[AnalysisJob]:
         return self.jobs.list(status)
@@ -498,6 +579,7 @@ class AnalysisExecutor:
                 self._tasks[job_id] = task
                 self._condition.notify_all()
 
+            self._persist_job(job)
             await self._await_job(job, task)
             # Освободилось место: будим остальных worker'ов, если в очереди
             # уже лежат задачи.
@@ -591,6 +673,7 @@ class AnalysisExecutor:
     def _finish_job(self, job: AnalysisJob) -> None:
         self._active.discard(job.job_id)
         self._tasks.pop(job.job_id, None)
+        self._persist_job(job)
         self._signal_done(job.job_id)
         # notify_all нельзя вызывать без захвата Condition. В этом месте мы
         # уже вне критической секции; для ожидающих stats/wait событие уже

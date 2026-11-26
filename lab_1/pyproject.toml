@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "submission-system"
-version = "0.3.0"
-description = "Приём, валидация, анализ сходства и ограниченный исполнитель заданий"
+version = "0.4.0"
+description = "Приём, анализ сходства, ограниченный исполнитель и FastAPI-сервис с SQLite"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
@@ -13,7 +13,8 @@ authors = [{ name = "Denis Kazartsev" }]
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "httpx>=0.27"]
+api = ["fastapi>=0.110", "uvicorn>=0.23"]
 ml = ["mlflow>=3.0"]
 
 [tool.setuptools]

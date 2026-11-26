@@ -1,0 +1,148 @@
+{
+  "report_version": "3.1.0-stage-b",
+  "health": {
+    "status": "ok",
+    "database": "C:\\Users\\dench\\AppData\\Local\\Temp\\lab3b-demo-wh43jr5d\\analysis.db",
+    "recovered": {
+      "interrupted": 0,
+      "inconsistent": 0
+    }
+  },
+  "submission": {
+    "student_id": "student-demo",
+    "submission_id": "sub-demo",
+    "assignment_id": "",
+    "timestamp": "2026-10-20T12:00:00+03:00",
+    "code": "print('demo')\n",
+    "text": "",
+    "ai_declaration": null,
+    "raw_content_hash": "019083fac0ad261c560d5e7f9263dcb78795b10ce67b6a7886d641c74abe69ce"
+  },
+  "baseline_job": {
+    "job_id": "job-a0a2e6f0149049f0901a52bfa4dfbea1",
+    "submission_id": "sub-demo",
+    "submission_hash": "019083fac0ad261c560d5e7f9263dcb78795b10ce67b6a7886d641c74abe69ce",
+    "analyzer_id": "baseline",
+    "config_hash": "a35ccc2dad75906b",
+    "status": "succeeded",
+    "attempt_no": 1,
+    "timeout_seconds": 30.0,
+    "created_at": "2026-11-26T09:49:21.686482+00:00",
+    "queued_at": "2026-11-26T09:49:21.686482+00:00",
+    "started_at": "2026-11-26T09:49:21.695620+00:00",
+    "finished_at": "2026-11-26T09:49:21.703943+00:00",
+    "updated_at": "2026-11-26T09:49:21.703943+00:00",
+    "error_code": null,
+    "error_message": null,
+    "has_result": true,
+    "result": {
+      "analyzer_id": "baseline",
+      "analyzer_version": "1.0.0",
+      "score": null,
+      "similarity": null,
+      "rubric_feedback": "Найдено 1 непустых строк кода и текста.",
+      "evidence": [],
+      "model_version": "length-analyzer-1.0.0",
+      "index_version": null,
+      "prompt_version": null,
+      "mlflow_run_id": "demo-mlflow-run",
+      "config_hash": "a35ccc2dad75906b"
+    }
+  },
+  "baseline_report": {
+    "analyzer_id": "baseline",
+    "analyzer_version": "1.0.0",
+    "score": null,
+    "similarity": null,
+    "rubric_feedback": "Найдено 1 непустых строк кода и текста.",
+    "evidence": [],
+    "model_version": "length-analyzer-1.0.0",
+    "index_version": null,
+    "prompt_version": null,
+    "mlflow_run_id": "demo-mlflow-run",
+    "config_hash": "a35ccc2dad75906b"
+  },
+  "model_job": {
+    "job_id": "job-d54a9f9fad2645fe9a7f895fb16b7a74",
+    "submission_id": "sub-demo",
+    "submission_hash": "019083fac0ad261c560d5e7f9263dcb78795b10ce67b6a7886d641c74abe69ce",
+    "analyzer_id": "model",
+    "config_hash": "68f2581f0cb62589",
+    "status": "succeeded",
+    "attempt_no": 1,
+    "timeout_seconds": 30.0,
+    "created_at": "2026-11-26T09:49:21.726373+00:00",
+    "queued_at": "2026-11-26T09:49:21.726373+00:00",
+    "started_at": "2026-11-26T09:49:21.737888+00:00",
+    "finished_at": "2026-11-26T09:49:21.767431+00:00",
+    "updated_at": "2026-11-26T09:49:21.767431+00:00",
+    "error_code": null,
+    "error_message": null,
+    "has_result": true,
+    "result": {
+      "analyzer_id": "model",
+      "analyzer_version": "1.0.0",
+      "score": 0.14,
+      "similarity": null,
+      "rubric_feedback": "Модель stub-model-1.0.0 вернула score=0.140",
+      "evidence": [],
+      "model_version": "stub-model-1.0.0",
+      "index_version": "tfidf-lr2",
+      "prompt_version": "retrieval-feedback-1.0.0",
+      "mlflow_run_id": "demo-mlflow-run",
+      "config_hash": "68f2581f0cb62589"
+    }
+  },
+  "idempotent_replay": {
+    "status_code": 200,
+    "replay_header": "true",
+    "same_job": true
+  },
+  "jobs_count": 2,
+  "analyzers": [
+    {
+      "analyzer_id": "baseline",
+      "analyzer_version": "1.0.0",
+      "config_hash": "a35ccc2dad75906b",
+      "model_version": "length-analyzer-1.0.0",
+      "index_version": "",
+      "prompt_version": ""
+    },
+    {
+      "analyzer_id": "model",
+      "analyzer_version": "1.0.0",
+      "config_hash": "68f2581f0cb62589",
+      "model_version": "stub-model-1.0.0",
+      "index_version": "tfidf-lr2",
+      "prompt_version": "retrieval-feedback-1.0.0"
+    }
+  ],
+  "restart_health": {
+    "status": "ok",
+    "database": "C:\\Users\\dench\\AppData\\Local\\Temp\\lab3b-demo-wh43jr5d\\analysis.db",
+    "recovered": {
+      "interrupted": 1,
+      "inconsistent": 0
+    }
+  },
+  "interrupted_job": {
+    "job_id": "job-interrupted-demo",
+    "submission_id": "sub-demo",
+    "submission_hash": "019083fac0ad261c560d5e7f9263dcb78795b10ce67b6a7886d641c74abe69ce",
+    "analyzer_id": "model",
+    "config_hash": "demo-config",
+    "status": "failed",
+    "attempt_no": 4,
+    "timeout_seconds": 30.0,
+    "created_at": "2026-11-26T09:49:21.809371+00:00",
+    "queued_at": "2026-11-26T09:49:21.809371+00:00",
+    "started_at": "2026-11-26T09:49:21.815907+00:00",
+    "finished_at": "2026-11-26T09:49:21.825692+00:00",
+    "updated_at": "2026-11-26T09:49:21.825692+00:00",
+    "error_code": "interrupted",
+    "error_message": "Процесс был перезапущен до завершения задачи",
+    "has_result": false,
+    "result": null
+  },
+  "caveat": "Демонстрация использует временную БД; внешняя модель не вызывается."
+}

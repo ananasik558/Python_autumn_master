@@ -5,3 +5,6 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+artifacts/lab3/*.db
+artifacts/lab3/*.db-wal
+artifacts/lab3/*.db-shm

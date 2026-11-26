@@ -23,7 +23,7 @@ from submission_system.jobs import (
     SyncAnalyzerAdapter,
     build_analysis_job,
 )
-from submission_system.models import Assignment, Submission
+from submission_system.models import AnalysisReport, Assignment, Submission
 
 
 def _submission(index: int) -> Submission:
@@ -34,6 +34,35 @@ def _submission(index: int) -> Submission:
         code="print(1)\n",
         text="",
     )
+
+
+class GateAdapter:
+    """Детерминированный барьер: ровно N задач ждут общего события."""
+
+    analyzer_id = "gate_adapter"
+    config_hash = "gate-config"
+
+    def __init__(self, expected_running: int) -> None:
+        self.expected_running = expected_running
+        self.started = asyncio.Event()
+        self.gate = asyncio.Event()
+        self.active = 0
+        self.max_active = 0
+
+    async def analyze(self, submission, job, *, executor=None) -> AnalysisReport:
+        self.active += 1
+        self.max_active = max(self.max_active, self.active)
+        if self.active >= self.expected_running:
+            self.started.set()
+        try:
+            await self.gate.wait()
+            return AnalysisReport(
+                analyzer_id=self.analyzer_id,
+                analyzer_version="1.0.0",
+                score=0.5,
+            )
+        finally:
+            self.active -= 1
 
 
 async def _wait_running(executor: AnalysisExecutor, job_id: str) -> None:
@@ -77,6 +106,42 @@ def test_required_queue_and_concurrency_limits():
         )
         assert all(job.status is JobStatus.SUCCEEDED for job in jobs)
         assert adapter.max_active <= 2
+        await executor.shutdown()
+
+    asyncio.run(scenario())
+
+
+def test_required_twenty_jobs_with_limit_three_and_bounded_queue():
+    async def scenario():
+        adapter = GateAdapter(expected_running=3)
+        executor = AnalysisExecutor(
+            {"gate": adapter},
+            ExecutorConfig(concurrency_limit=3, queue_limit=5),
+        )
+        results = [
+            await executor.submit(_submission(index), "gate")
+            for index in range(20)
+        ]
+        accepted = [result for result in results if result.accepted]
+        rejected = [result for result in results if not result.accepted]
+
+        await asyncio.wait_for(adapter.started.wait(), timeout=2)
+        assert len(accepted) == 8  # 3 немедленных + 5 в очереди
+        assert len(rejected) == 12
+        assert all(
+            result.error_code is JobErrorCode.QUEUE_FULL for result in rejected
+        )
+        assert executor.running_count == 3
+        assert executor.pending_count <= 5
+        assert adapter.max_active == 3
+
+        adapter.gate.set()
+        jobs = await executor.wait_all(
+            [result.job.job_id for result in accepted],
+            timeout=5,
+        )
+        assert all(job.status is JobStatus.SUCCEEDED for job in jobs)
+        assert adapter.max_active == 3
         await executor.shutdown()
 
     asyncio.run(scenario())

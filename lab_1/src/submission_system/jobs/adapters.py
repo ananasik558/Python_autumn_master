@@ -14,7 +14,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import inspect
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Awaitable, Callable, Optional, Protocol, runtime_checkable
 
 from ..contracts import AnalysisContext
@@ -74,16 +74,25 @@ class SyncAnalyzerAdapter:
     analyzer: Any
     assignment: Assignment
     config_hash: str = ""
+    model_version: str = ""
+    index_version: str = ""
+    prompt_version: str = ""
+    mlflow_run_id: str = ""
+    adapter_id: str = ""
     analyzer_id: str = field(init=False)
 
     def __post_init__(self) -> None:
-        self.analyzer_id = str(self.analyzer.analyzer_id)
+        self.analyzer_id = self.adapter_id or str(self.analyzer.analyzer_id)
         if not self.config_hash:
             payload = (
                 f"{self.analyzer.analyzer_id}:{self.analyzer.analyzer_version}:"
                 f"{self.assignment.assignment_id}:{self.assignment.allowed_template}"
             )
             self.config_hash = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
+    @property
+    def analyzer_version(self) -> str:
+        return str(getattr(self.analyzer, "analyzer_version", ""))
 
     def _analyze_sync(
         self,
@@ -105,14 +114,38 @@ class SyncAnalyzerAdapter:
         )
         loop = asyncio.get_running_loop()
         if executor is not None:
-            return await loop.run_in_executor(
+            report = await loop.run_in_executor(
                 executor,
                 self._analyze_sync,
                 submission,
                 context,
             )
-        # Fallback для автономного использования адаптера в тестах.
-        return await asyncio.to_thread(self._analyze_sync, submission, context)
+        else:
+            # Fallback для автономного использования адаптера в тестах.
+            report = await asyncio.to_thread(self._analyze_sync, submission, context)
+        return self._with_metadata(report, job)
+
+    def _with_metadata(
+        self,
+        report: AnalysisReport,
+        job: AnalysisJob,
+    ) -> AnalysisReport:
+        updates: dict[str, Any] = {}
+        if report.analyzer_id != self.analyzer_id:
+            updates["analyzer_id"] = self.analyzer_id
+        if report.model_version is None:
+            updates["model_version"] = (
+                self.model_version or getattr(self.analyzer, "analyzer_version", None)
+            )
+        if report.index_version is None and self.index_version:
+            updates["index_version"] = self.index_version
+        if report.prompt_version is None and self.prompt_version:
+            updates["prompt_version"] = self.prompt_version
+        if report.mlflow_run_id is None and self.mlflow_run_id:
+            updates["mlflow_run_id"] = self.mlflow_run_id
+        if report.config_hash is None:
+            updates["config_hash"] = job.config_hash or self.config_hash
+        return replace(report, **updates) if updates else report
 
 
 @dataclass
@@ -199,6 +232,29 @@ class SlowAdapter:
             )
         finally:
             self.active -= 1
+
+
+@dataclass
+class UnavailableAnalysisAdapter:
+    """Адаптер для окружения без внешней модели.
+
+    Сервис остаётся доступным, baseline продолжает работать, а задачи
+    модельного анализатора завершаются кодом ``model_unavailable``.
+    """
+
+    analyzer_id: str = "unavailable_model"
+    analyzer_version: str = "1.0.0"
+    config_hash: str = "unavailable-model"
+    message: str = "Внешняя модель не настроена"
+
+    async def analyze(
+        self,
+        submission: Submission,
+        job: AnalysisJob,
+        *,
+        executor: Any = None,
+    ) -> AnalysisReport:
+        raise AdapterUnavailable(self.message)
 
 
 class FailingAdapter(SlowAdapter):

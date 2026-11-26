@@ -23,6 +23,7 @@ from .adapters import (
     InvalidAdapterResponse,
     SlowAdapter,
     SyncAnalyzerAdapter,
+    UnavailableAnalysisAdapter,
 )
 from .executor import AnalysisExecutor, ExecutorConfig
 from .model_adapter import (
@@ -76,6 +77,7 @@ __all__ = [
     "StubModelAdapter",
     "SubmitResult",
     "SyncAnalyzerAdapter",
+    "UnavailableAnalysisAdapter",
     "build_analysis_job",
     "iter_batches",
     "model_error_code",

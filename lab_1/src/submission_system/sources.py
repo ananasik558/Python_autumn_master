@@ -29,6 +29,7 @@ class JsonlSource:
                         "code": data.get("code", ""),
                         "text": data.get("text", ""),
                         "ai_declaration": data.get("ai_declaration"),
+                        "assignment_id": data.get("assignment_id", ""),
                         "raw_content_hash": data.get("raw_content_hash")
                     }
                     

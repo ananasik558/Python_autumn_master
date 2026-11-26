@@ -48,6 +48,9 @@ class JobErrorCode(str, Enum):
     MODEL_UNAVAILABLE = "model_unavailable"
     INVALID_MODEL_RESPONSE = "invalid_model_response"
     CONFIG_MISMATCH = "config_mismatch"
+    IDEMPOTENCY_CONFLICT = "idempotency_conflict"
+    INTERRUPTED = "interrupted"
+    INCONSISTENT_STATE = "inconsistent_state"
 
     def __str__(self) -> str:
         return self.value
@@ -277,6 +280,11 @@ class JobStore:
     def add(self, job: AnalysisJob) -> None:
         if job.job_id in self._jobs:
             raise ValueError(f"Задача с job_id={job.job_id} уже существует")
+        self._jobs[job.job_id] = job
+
+    def save(self, job: AnalysisJob) -> None:
+        """Вставляет или обновляет задачу; используется исполнителем."""
+
         self._jobs[job.job_id] = job
 
     def get(self, job_id: str) -> Optional[AnalysisJob]:

@@ -135,6 +135,10 @@ class GuardedModelAdapter:
     config: BatchConfig = field(default_factory=BatchConfig)
     analyzer_id: str = "guarded_model_adapter"
     analyzer_version: str = "1.0.0"
+    index_version: str = ""
+    prompt_version: str = ""
+    mlflow_run_id: str = ""
+    reported_model_version: str = ""
 
     active_calls: int = field(default=0, init=False)
     max_active_calls: int = field(default=0, init=False)
@@ -143,7 +147,7 @@ class GuardedModelAdapter:
     def __post_init__(self) -> None:
         self._semaphore = asyncio.Semaphore(self.config.concurrency_limit)
         payload = (
-            f"{self.analyzer_id}:{getattr(self.adapter, 'model_version', 'unknown')}:"
+            f"{self.analyzer_id}:{self.model_version}:"
             f"batch={self.config.batch_size}:"
             f"concurrency={self.config.concurrency_limit}:"
             f"timeout={self.config.call_timeout}"
@@ -153,6 +157,12 @@ class GuardedModelAdapter:
     @property
     def batch_size(self) -> int:
         return self.config.batch_size
+
+    @property
+    def model_version(self) -> str:
+        return self.reported_model_version or str(
+            getattr(self.adapter, "model_version", "unknown")
+        )
 
     async def _guarded_call(self, operation: Callable[[], Awaitable[Any]]) -> Any:
         async with self._semaphore:
@@ -239,6 +249,11 @@ class GuardedModelAdapter:
                 f"Модель {getattr(self.adapter, 'model_version', 'unknown')} "
                 f"вернула score={score:.3f}"
             ),
+            model_version=self.model_version,
+            index_version=self.index_version or None,
+            prompt_version=self.prompt_version or None,
+            mlflow_run_id=self.mlflow_run_id or None,
+            config_hash=self.config_hash,
         )
 
 

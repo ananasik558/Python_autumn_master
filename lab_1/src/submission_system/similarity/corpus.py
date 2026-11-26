@@ -54,6 +54,7 @@ class CorpusSubmission:
             timestamp=self.timestamp,
             code=self.code,
             text=self.text,
+            assignment_id=self.assignment_id,
         )
 
     def to_dict(self) -> dict[str, Any]:
